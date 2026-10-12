@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo store – tracked page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <b>Demo Store</b>
+    <nav><a class="nav-link" href="index.html">Home</a><a class="nav-link" href="pricing.html">Pricing</a></nav>
+  </header>
+
+  <div class="hero">
+    <h1>Click around this page</h1>
+    <p>Every page view and click is sent to the Flask API. Then open the dashboard to see your session and heatmap.</p>
+    <a class="btn btn-primary" href="pricing.html">See pricing</a>
+    <button class="btn alt" onclick="alert('Clicked!')">Learn more</button>
+  </div>
+
+  <section>
+    <h2>Featured</h2>
+    <div class="grid">
+      <article class="card"><h3>Trail shoes</h3><p>Light, grippy, ready for anything.</p></article>
+      <article class="card"><h3>Rain shell</h3><p>Packs down to the size of an apple.</p></article>
+      <article class="card"><h3>Day pack</h3><p>22 litres, one very good zipper.</p></article>
+    </div>
+  </section>
+
+  <div class="spacer">Scroll further: clicks are recorded in page coordinates</div>
+
+  <section class="signup-section">
+    <h2>Get updates</h2>
+    <button class="btn signup" onclick="alert('Thanks!')">Sign up</button>
+  </section>
+
+  <footer>Demo page for the CausalFunnel analytics assignment.</footer>
+
+  <script src="/tracker.js"></script>
+</body>
+</html>
