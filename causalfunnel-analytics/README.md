@@ -1,140 +1,230 @@
-# CausalFunnel User Analytics
+# CausalFunnel Analytics
 
-A small full-stack app that tracks user interactions on a webpage and shows them in a dashboard.
+A full-stack web analytics dashboard for tracking user events, monitoring sessions, and visualizing user interaction data through heatmaps.
 
-- **Tracker**: a vanilla JS script (`tracker/tracker.js`) that records `page_view` and `click` events
-- **Backend**: Flask API storing events in MongoDB
-- **Dashboard**: React (Vite) app with a Sessions view (user journey) and a Heatmap view
+## 🚀 Live Demo
 
+- **Frontend Dashboard:** [Open CausalFunnel Analytics](https://causalfunnel-analytics-rho.vercel.app/)
+- **Backend API:** [Open Backend](https://causalfunnel-analytics-tl6q.onrender.com/)
+- **GitHub Repository:** [View Source Code](https://github.com/shivamsinha02/causalfunnel-analytics)
+
+## ✨ Features
+
+- **Event Tracking:** Collect user interaction events through a tracking script.
+- **Session Analytics:** View recorded user sessions and session activity.
+- **Event Analytics:** Access event data and event counts through the dashboard.
+- **Heatmap Analytics:** Explore page-level user interaction data.
+- **REST API:** Flask-powered endpoints for retrieving analytics data.
+- **Persistent Storage:** Store analytics data in MongoDB.
+- **Live Deployment:** React frontend hosted on Vercel and Flask backend hosted on Render.
+
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React, Vite, JavaScript |
+| Backend | Python, Flask, REST API |
+| Database | MongoDB Atlas, PyMongo |
+| Tracking | JavaScript |
+| Frontend Hosting | Vercel |
+| Backend Hosting | Render |
+| Version Control | Git, GitHub |
+
+## 🏗️ Architecture
+
+```text
+             User / Website
+                    |
+                    v
+          JavaScript Tracking Script
+                    |
+                    v
+             Flask REST API
+                    |
+                    v
+              MongoDB Atlas
+                    |
+                    v
+          Analytics API Endpoints
+                    |
+                    v
+          React Analytics Dashboard
+                 (Vercel)
 ```
-demo page + tracker.js  --POST /api/events-->  Flask  -->  MongoDB
-                                                 ^
-                              React dashboard ---+  (sessions, journey, heatmap)
+
+The tracking script sends interaction data to the backend. Flask processes the incoming requests and works with MongoDB to store and retrieve analytics data. The React dashboard fetches analytics information through the REST API and presents it to the user.
+
+## 📁 Project Structure
+
+```text
+causalfunnel-analytics/
+├── frontend/             # React + Vite dashboard
+├── backend/
+│   ├── app.py            # Flask application and API routes
+│   ├── requirements.txt  # Python dependencies
+│   └── ...               # Backend modules and configuration
+├── tracker/
+│   └── tracker.js        # JavaScript tracking script
+├── .gitignore
+└── README.md
 ```
 
-## Tech stack
+## ⚙️ Run Locally
 
-| Layer     | Choice                                   |
-|-----------|------------------------------------------|
-| Tracker   | Vanilla JavaScript (no dependencies)     |
-| Backend   | Python 3.9+, Flask, Flask-CORS, PyMongo  |
-| Database  | MongoDB (single `events` collection)     |
-| Dashboard | React 18 + Vite, plain CSS               |
+### Prerequisites
 
-## Setup
+- Python 3.10 or later
+- Node.js and npm
+- MongoDB Atlas account or a MongoDB instance
 
-Prerequisites: Python 3.9+, Node 18+, and MongoDB (local, Docker, or Atlas).
-
-### 1. MongoDB
+### 1. Clone the repository
 
 ```bash
-docker compose up -d          # starts MongoDB on localhost:27017
+git clone https://github.com/shivamsinha02/causalfunnel-analytics.git
+cd causalfunnel-analytics
 ```
-Or use an existing instance / Atlas and set `MONGO_URI` in `backend/.env`.
 
-### 2. Backend (http://localhost:5000)
+### 2. Configure and start the backend
 
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+**Windows**
+```bash
+venv\Scripts\activate
+```
+
+**macOS/Linux**
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
-cp .env.example .env                                   # edit if your Mongo URI differs
+```
+
+Configure the following environment variables with your MongoDB connection details:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+MONGO_DB=causalfunnel
+```
+
+Start the Flask application using the entry point configured in `app.py`:
+
+```bash
 python app.py
 ```
 
-Optional: load sample data so the dashboard isn't empty.
-```bash
-python seed.py --reset
-```
+Use the local backend URL configured by the application, typically `http://localhost:5000`.
 
-### 3. Dashboard (http://localhost:5173)
+### 3. Start the frontend
+
+Open another terminal:
 
 ```bash
 cd frontend
 npm install
+```
+
+Create a `.env` file in the `frontend` directory:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
-In dev, Vite proxies `/api` to Flask. For a deployed build, set `VITE_API_URL` to the API origin.
 
-### 4. Try the tracker
+Open the local URL printed by Vite in your terminal.
 
-Open **http://localhost:5000/demo/**, click around, visit the pricing page, then open the dashboard.
-Events are batched and sent about one second after each interaction, so hit **Refresh** on the Sessions tab.
+> Keep your MongoDB credentials in environment variables. Do not commit `.env` files or database passwords to GitHub.
 
-## Adding the tracker to any page
+## 🔌 API Endpoints
 
-```html
-<script src="https://YOUR-API-HOST/tracker.js"></script>
-<!-- or, if the script is hosted separately from the API: -->
-<script src="/tracker.js" data-api="https://YOUR-API-HOST"></script>
+The backend provides REST endpoints for health checks, event tracking, session analytics, and heatmap data.
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Check backend health |
+| GET | `/api/events` | Retrieve event data |
+| GET | `/api/sessions` | Retrieve session data |
+| GET | `/api/heatmap/pages` | Retrieve pages represented in heatmap data |
+| GET | `/demo/` | Access the demo page |
+| GET | `/tracker.js` | Serve the JavaScript tracking script |
+
+Base URL for the deployed backend:
+
+```text
+https://causalfunnel-analytics-tl6q.onrender.com
 ```
 
-Each event contains: `session_id`, `type`, `page_url`, `timestamp` (epoch ms), plus for clicks `x`, `y`
-(document/page coordinates), `page_width`, `page_height`, `viewport_width`, `viewport_height`, `target`.
+## ☁️ Deployment
 
-## API
+### Frontend — Vercel
 
-| Method | Path                          | Purpose |
-|--------|-------------------------------|---------|
-| POST   | `/api/events`                 | Store one event, an array, or `{ "events": [...] }` (max 100). Returns `202 { accepted, rejected }` |
-| GET    | `/api/sessions`               | Sessions with `total_events`, `page_views`, `clicks`, `first_seen`, `last_seen`; supports `limit`, `skip` |
-| GET    | `/api/sessions/<id>/events`   | All events of one session, ordered by time |
-| GET    | `/api/heatmap/pages`          | Pages with click / page view counts |
-| GET    | `/api/heatmap?url=<page_url>` | Click points for one page (`x`, `y`, `nx`) plus reference page size |
-| GET    | `/tracker.js`, `/demo/`       | Tracker script and demo pages |
+- Root directory: `frontend`
+- Framework preset: Vite
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variable:
 
-Example:
-```bash
-curl -X POST localhost:5000/api/events -H 'Content-Type: application/json' \
-  -d '{"session_id":"abc","type":"click","page_url":"http://localhost:5000/demo/","timestamp":1760000000000,"x":120,"y":340}'
+```env
+VITE_API_URL=https://causalfunnel-analytics-tl6q.onrender.com
 ```
 
-## Data model
+### Backend — Render
 
-One document per event in `events`:
+- Root directory: `backend`
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn app:app`
+- Environment variables:
 
-```json
-{
-  "session_id": "6f1c...",
-  "type": "click",
-  "page_url": "http://localhost:5000/demo/",
-  "page_path": "/demo/",
-  "timestamp": "ISODate",
-  "received_at": "ISODate",
-  "x": 412, "y": 880,
-  "page_width": 1440, "page_height": 1900,
-  "viewport_width": 1440, "viewport_height": 800,
-  "target": "a.btn.btn-primary",
-  "user_agent": "..."
-}
+```env
+MONGO_URI=your_mongodb_connection_string
+MONGO_DB=causalfunnel
 ```
-Indexes: `(session_id, timestamp)` for journeys, `(type, page_url)` for heatmaps, `(timestamp desc)`.
-Sessions are computed with an aggregation (`$group` by `session_id`), so there is no second collection to keep in sync.
 
-## Assumptions and trade-offs
+The deployed frontend communicates with the backend through the configured API URL, while MongoDB Atlas provides persistent data storage.
 
-- **Sessions**: a session ID lives in `localStorage` (cookie fallback) and rotates after 30 minutes of inactivity.
-- **Click coordinates** are page coordinates (`pageX/pageY`), not viewport coordinates, so scrolling doesn't skew the heatmap.
-  `x` is also normalised against the visitor's page width, so clicks from different screen sizes overlay roughly correctly.
-  Layouts that change a lot between breakpoints will still blur together; a production version would bucket by device class
-  or anchor clicks to DOM elements.
-- **URLs**: the `#fragment` is stripped; the query string is kept, so `?a=1` and `?a=2` are separate pages in the heatmap.
-- **Transport**: events are batched and posted as `text/plain` JSON. That avoids CORS preflight requests and lets
-  `navigator.sendBeacon` flush the queue when the tab closes. The server parses the body as JSON regardless of content type.
-- **Sessions aggregation** runs over the whole collection on each request. Fine for a demo and mid-size data; at scale you'd
-  maintain a `sessions` collection (upsert on ingest) or use pre-aggregated rollups.
-- **No auth, no rate limiting, open CORS**: the ingest endpoint must accept traffic from any site, and the dashboard API is
-  unauthenticated. A real deployment needs a site/API key on ingest and login on the read endpoints.
-- **Heatmap cap**: at most 10,000 most recent clicks per page are returned.
-- **Heatmap background**: the optional "show the page underneath" uses an iframe, so sites that send `X-Frame-Options` won't render.
-- Not included: bot filtering, consent banner / GDPR handling, scroll or mouse-move tracking, automated tests.
+## 🧪 Testing the Application
 
+1. Open the [live dashboard](https://causalfunnel-analytics-rho.vercel.app/).
+2. Open the deployed backend's `/demo/` route to access the demo page.
+3. Interact with the demo page to generate tracking events.
+4. Return to the dashboard and refresh it.
+5. Verify that sessions, events, and heatmap information appear when data has been collected successfully.
 
-## Project layout
+The dashboard may show empty states until tracking events have been generated and saved successfully.
 
-```
-backend/    Flask app, seed script
-tracker/    tracker.js
-demo/       two small pages that include the tracker
-frontend/   React dashboard (Vite)
-```
+## 🔐 Configuration and Security
+
+- Store database credentials in environment variables.
+- Configure MongoDB Atlas network access according to the deployment environment.
+- Restrict CORS to trusted origins before production use.
+- Add appropriate authentication and authorization before exposing sensitive analytics data.
+
+## 🎯 Project Objective
+
+CausalFunnel Analytics demonstrates a full-stack analytics workflow combining client-side event collection, a Flask REST API, MongoDB persistence, and a React dashboard. The project focuses on understanding user activity and presenting collected interaction data through a centralized analytics interface.
+
+## 👨‍💻 Author
+
+**Shivam Sinha**
+
+- GitHub: [@shivamsinha02](https://github.com/shivamsinha02)
+- Project Repository: [CausalFunnel Analytics](https://github.com/shivamsinha02/causalfunnel-analytics)
+
+---
+
+Built with React, Flask, and MongoDB.
