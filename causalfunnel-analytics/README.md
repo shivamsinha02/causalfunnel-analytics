@@ -129,11 +129,6 @@ Sessions are computed with an aggregation (`$group` by `session_id`), so there i
 - **Heatmap background**: the optional "show the page underneath" uses an iframe, so sites that send `X-Frame-Options` won't render.
 - Not included: bot filtering, consent banner / GDPR handling, scroll or mouse-move tracking, automated tests.
 
-## Deploying (optional)
-
-- API: `gunicorn app:app` on any host (Render, Railway, Fly) with `MONGO_URI` pointing at Atlas.
-- Dashboard: `npm run build` and host `frontend/dist` on Netlify/Vercel with `VITE_API_URL` set.
-- Update the `<script>` tag on tracked pages to the deployed API host.
 
 ## Project layout
 
